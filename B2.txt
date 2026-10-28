@@ -1,0 +1,49 @@
+ns — and exactly why each one is needed
+
+Maui works **without root**, using public Android APIs. It also detects `su` at runtime and
+unlocks extra power when it is present.
+
+| Permission | Why | Without it |
+|---|---|---|
+| Display over other apps | Draws the Maui bubble | The overlay cannot appear |
+| All files access | Scans and deletes junk in shared storage | Only app-private caches are cleaned |
+| Usage access | Detects the foreground app, per-app storage, games | No game toolbar, no size column |
+| Notifications | Shows the "Maui Layers is active" notification | The service runs, but silently |
+| Battery optimisation exemption | Keeps the layer alive | Android may kill it in the background |
+| Modify system settings | Sets animation scale to 0 in Game Mode | Game Mode works, minus the animation tweak |
+| Do Not Disturb access | Silences notifications while gaming | DND is skipped, everything else works |
+| `QUERY_ALL_PACKAGES` | Lets Maui see every installed app | Apps list is incomplete |
+
+All of them are listed with live status in **Settings → Permissions**, each with a **Grant**
+button that opens the exact system screen.
+
+### 🛠 Build from source
+
+```bash
+git clone https://github.com/YOUSSEFJEDIDI89/Maui.git
+cd Maui
+export ANDROID_HOME=$HOME/Android/Sdk
+./gradlew :app:assembleRelease      # -> app/build/outputs/apk/release/app-release.apk
+./gradlew :app:testReleaseUnitTest  # JVM + Robolectric test suite
+```
+
+Requirements: **JDK 17**, **Android SDK 35** (platform 35 + build-tools 35.0.0), Gradle 8.9+.
+
+> The repository ships a **demo signing key** (`keystore/maui-release.jks`, password `maui2026`,
+> alias `maui`) so that CI produces an installable release APK for anyone who forks the project.
+> Replace it with your own key before publishing to any store.
+
+### 🧪 Tests
+
+```bash
+./gradlew :app:testReleaseUnitTest
+```
+
+* `CoreLogicTest` — size/percent formatting, recursive directory sizing, real shell execution.
+* `MauiSmokeTest` — **Robolectric** runs every screen on a real Android runtime: the main activity and its five navigation tabs, the dashboard stat tiles, the settings permission rows, the apps and file-explorer activities, all four overlay views, and a scanner test that plants junk files on disk and asserts they are found.
+
+### 📁 Project layout
+
+```
+Maui/
+├──
