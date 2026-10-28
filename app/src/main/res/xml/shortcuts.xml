@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="cleaner"
+        android:enabled="true"
+        android:icon="@drawable/ic_nav_cleaner"
+        android:shortcutShortLabel="@string/nav_cleaner"
+        android:shortcutLongLabel="@string/clean_title">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.maui.system"
+            android:targetClass="com.maui.system.ui.MainActivity">
+            <extra android:name="tab" android:value="cleaner" />
+        </intent>
+    </shortcut>
+    <shortcut
+        android:shortcutId="games"
+        android:enabled="true"
+        android:icon="@drawable/ic_nav_games"
+        android:shortcutShortLabel="@string/nav_games"
+        android:shortcutLongLabel="@string/games_title">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.maui.system"
+            android:targetClass="com.maui.system.ui.MainActivity">
+            <extra android:name="tab" android:value="games" />
+        </intent>
+    </shortcut>
+    <shortcut
+        android:shortcutId="files"
+        android:enabled="true"
+        android:icon="@drawable/ic_nav_files"
+        android:shortcutShortLabel="@string/nav_files"
+        android:shortcutLongLabel="@string/files_title">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.maui.system"
+            android:targetClass="com.maui.system.ui.MainActivity">
+            <extra android:name="tab" android:value="files" />
+        </intent>
+    </shortcut>
+</shortcuts>
