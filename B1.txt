@@ -1,0 +1,40 @@
+. |
+
+#### 🧹 Cleaner — finds the files you cannot find
+- **App caches, thumbnails, temp files, logs, empty folders** — scanned and grouped by category.
+- **Hidden leftovers** — dot-files and dot-folders anywhere in shared storage.
+- **Large files** — anything over 100 MB, sorted by size.
+- **Byte-identical duplicates** — files are grouped by size, then confirmed with an MD5 hash, so only true duplicates are flagged (the original is never touched).
+- **Old `.apk` installers** left in Downloads.
+- **Safe by default** — only genuinely safe categories are pre-selected. Hidden files, large files, duplicates and installers must be ticked by you.
+- **Honest reporting** — freed space is measured, never estimated.
+
+#### ⚡ Booster & Game Mode
+- **Boost** kills background processes through `ActivityManager.killBackgroundProcesses` and trims the system cache with `pm trim-caches` (root), then reports the *actual* change in available memory.
+- **Game Mode** drops window, transition and animator scales to `0` (the single biggest real win against jank), stops background apps, enables the game toolbar and silences notifications through Do Not Disturb.
+- **Real FPS** — sampled from `SurfaceFlinger` when root is available, from the frame callback otherwise.
+
+#### 📂 Files & 📦 Apps
+- Built-in browser: internal storage, SD card, hidden-only, large-files-only and duplicates-only views, with delete (confirmed) and share via `FileProvider`.
+- App manager with a per-app **app / cache / data** breakdown from `StorageStatsManager`, search, sort by size or name, force-stop, clear cache and uninstall.
+- Root-assisted actions unlock automatically when `su` is detected: `pm trim-caches`, per-app cache clearing, `am force-stop`, and `du`-based cache discovery.
+
+#### 🌍 Bilingual & themed
+- Full English **and** Arabic (`values-ar`) with correct RTL support, launcher label `ماوي`.
+- Material 3 theme, light / dark / follow-system, four navigation tabs plus settings.
+
+### 📦 Install
+
+Grab the signed APK from the **[Releases page](../../releases)** — `Maui-v1.0-release.apk`.
+
+1. Download the `.apk` to your phone.
+2. Open it and allow "install from unknown sources" for your file manager.
+3. Install and launch **Maui** from the launcher.
+
+Via ADB:
+
+```bash
+adb install -r Maui-v1.0-release.apk
+```
+
+### 🔐 Permissio
