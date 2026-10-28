@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="14dp"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/details_storage"
+            style="@style/Text.Maui.Section"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/bar_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            app:trackCornerRadius="6dp"
+            app:trackThickness="9dp" />
+
+        <TextView
+            android:id="@+id/breakdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12.5sp"
+            android:layout_marginTop="10dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_clear_cache"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/apps_clear_cache"
+            app:cornerRadius="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_stop"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/apps_stop"
+            app:cornerRadius="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_info"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/details_open_settings"
+            app:cornerRadius="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_uninstall"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/apps_uninstall" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
