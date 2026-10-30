@@ -1,2 +1,0 @@
-steps:
-  - run: echo $GITHUB_TOKEN
