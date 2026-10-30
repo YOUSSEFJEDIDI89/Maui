@@ -22,6 +22,10 @@
   <img src="docs/screenshots/layers.png" width="260" alt="Maui Layers overlay">
 </p>
 
+> **Screenshots** are rendered by CI straight from the running app (Robolectric native
+> graphics — the real layouts, the real views, the real scanner). They are committed by the
+> release workflow, so they appear here after the first CI run.
+
 > **Everything in Maui is measured, never faked.** RAM, CPU, temperature and FPS come
 > straight from the OS (`/proc/stat`, `ActivityManager.MemoryInfo`, sysfs thermal zones,
 > `SurfaceFlinger`). Free space is measured before and after deletion. If a feature needs
