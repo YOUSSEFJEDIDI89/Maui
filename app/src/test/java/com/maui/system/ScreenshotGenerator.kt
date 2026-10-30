@@ -116,7 +116,7 @@ class ScreenshotGenerator {
         File(ctx.cacheDir, "empty-folder").mkdirs()
 
         val battery = ctx.getSystemService(android.content.Context.BATTERY_SERVICE) as android.os.BatteryManager
-        shadowOf(battery).setChargeLevel(78)
+        shadowOf(battery).setIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY, 78)
         shadowOf(battery).setIsCharging(false)
 
         val am = ctx

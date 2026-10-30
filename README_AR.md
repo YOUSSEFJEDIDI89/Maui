@@ -76,17 +76,43 @@ One UI: مقبض (فقاعة) عايم تفتح منه لوحة تحكم فوق 
 
 ### 📦 التثبيت
 
-حمّل الـ APK موقّع من صفحة **[الإصدارات](../../releases)** — `Maui-v1.0-release.apk`.
+الـ APK موقّع واسمه `Maui-v1.0-release.apk`.
 
-1. نزّل الـ `.apk` على موبايلك.
-2. افتحه واسمح بـ "تثبيت من مصادر غير معروفة" لمدير الملفات.
-3. ثبّته وافتح **ماوي** من قائمة التطبيقات.
+**أولاً — من إصدارات GitHub (المفضّل).** صفحة الإصدارات فيها الـ APK كـ release asset حقيقي:
+
+    https://github.com/YOUSSEFJEDIDI89/Maui/releases
+
+**ثانياً — النسخة المطابقة داخل المستودع.** نفس الـ APK متخزّن هنا base64 مقطّعات، وبتقدر
+تعيد بناءه بايت ببايت:
+
+```bash
+git clone https://github.com/YOUSSEFJEDIDI89/Maui.git
+cd Maui/release
+cat Maui-v1.0-release.apk.b64.* | base64 -d > Maui-v1.0-release.apk
+sha256sum Maui-v1.0-release.apk
+# 8c2adb5794aa885b235680bba94de2e18c077c1d67f82666e93e55f3bac518b0
+```
+
+وبعدين على الموبايل: افتح الـ APK، واسمح بـ "تثبيت من مصادر غير معروفة"، وثبّته، وافتح **ماوي**.
 
 عن طريق ADB:
 
 ```bash
 adb install -r Maui-v1.0-release.apk
 ```
+
+### 🔁 نشر إصدار جديد
+
+الإصدار بيتبني عن طريق CI (`ci/release.yml`): بيبني الـ APK موقّع، بيشغّل الاختبارات، بيعيد
+توليد الصور، وبيعلّق الـ APK على GitHub Release.
+
+```bash
+bash scripts/enable_release.sh          # يفعّل الـ workflow (مرة واحدة)
+gh workflow run release.yml -f version=v1.0
+```
+
+سكربت `scripts/enable_release.sh` بينسخ الـ workflow جوّه `.github/workflows/` وبيعمله push.
+وبعدها الإصدار ممكن يتشغّل مباشرة من تاب Actions.
 
 ### 🔐 الصلاحيات — وليش كل واحدة بالظبط
 

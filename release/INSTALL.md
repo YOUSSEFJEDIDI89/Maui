@@ -15,7 +15,7 @@ base64 chunks, so it can always be reconstructed byte-for-byte:
 cd release
 cat Maui-v1.0-release.apk.b64.* | base64 -d > Maui-v1.0-release.apk
 sha256sum Maui-v1.0-release.apk
-# expected: 76d89fb57ea0b8bb0ad31c929dad9aa914f5495b573ffd83836ad7cb7a4bc2bf
+# expected: 8c2adb5794aa885b235680bba94de2e18c077c1d67f82666e93e55f3bac518b0
 ```
 
 Then install it on the phone (allow "install from unknown sources") and open **Maui**.

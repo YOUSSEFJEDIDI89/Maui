@@ -76,17 +76,45 @@ system APIs instead of animated counters.
 
 ### 📦 Install
 
-Grab the signed APK from the **[Releases page](../../releases)** — `Maui-v1.0-release.apk`.
+The signed APK is `Maui-v1.0-release.apk`.
 
-1. Download the `.apk` to your phone.
-2. Open it and allow "install from unknown sources" for your file manager.
-3. Install and launch **Maui** from the launcher.
+**Option A — GitHub Release (recommended).** The release page carries the APK as a
+proper release asset:
+
+    https://github.com/YOUSSEFJEDIDI89/Maui/releases
+
+**Option B — the mirror inside this repository.** The exact APK is also stored here as
+base64 chunks, so it can always be reconstructed byte-for-byte:
+
+```bash
+git clone https://github.com/YOUSSEFJEDIDI89/Maui.git
+cd Maui/release
+cat Maui-v1.0-release.apk.b64.* | base64 -d > Maui-v1.0-release.apk
+sha256sum Maui-v1.0-release.apk
+# 8c2adb5794aa885b235680bba94de2e18c077c1d67f82666e93e55f3bac518b0
+```
+
+Then, on the phone: open the APK, allow "install from unknown sources", install, and
+launch **Maui**.
 
 Via ADB:
 
 ```bash
 adb install -r Maui-v1.0-release.apk
 ```
+
+### 🔁 Publishing a new release
+
+The release is produced by CI (`ci/release.yml`), which builds the signed APK, runs the
+test suite, regenerates the screenshots and attaches the APK to a GitHub Release.
+
+```bash
+bash scripts/enable_release.sh          # installs the workflow (one-time)
+gh workflow run release.yml -f version=v1.0
+```
+
+`scripts/enable_release.sh` copies the workflow into `.github/workflows/` and pushes it.
+Once it is there, the release can also be triggered straight from the Actions tab.
 
 ### 🔐 Permissions — and exactly why each one is needed
 
