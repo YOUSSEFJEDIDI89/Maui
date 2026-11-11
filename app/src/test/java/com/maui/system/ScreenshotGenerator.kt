@@ -86,7 +86,13 @@ class ScreenshotGenerator {
 
         // ---- Games ----
         nav.selectedItemId = R.id.nav_games
-        Thread.sleep(250)
+        Thread.sleep(300)
+        // The launcher loads its list on a background thread; let the result
+        // reach the view before the shot.
+        repeat(4) {
+            shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(250))
+            Thread.sleep(150)
+        }
         render(decor, "games.png")
 
         controller.pause().stop().destroy()
@@ -107,9 +113,12 @@ class ScreenshotGenerator {
         ShadowStatFs.registerStats("/data", 6_600_000, 3_000_000, 2_900_000)
         ShadowStatFs.registerStats("/storage/emulated/0", 6_600_000, 3_000_000, 2_900_000)
 
-        // 8 GB RAM, 3.1 GB in use
-        // Plant real junk so the cleaner screen shows the app's own detection.
         val ctx = ApplicationProvider.getApplicationContext<android.content.Context>()
+
+        // Register a few games so the launcher's own detection has real titles.
+        installGamePackages(ctx)
+
+        // Plant real junk so the cleaner screen shows the app's own detection.
         File(ctx.cacheDir, "old-session.log").writeText("x".repeat(48_000))
         File(ctx.cacheDir, "temp-upload.tmp").writeText("y".repeat(12_000))
         File(ctx.cacheDir, "thumb-cache.bin").writeBytes(ByteArray(96_000))
@@ -128,6 +137,38 @@ class ScreenshotGenerator {
             lowMemory = false
         }
         shadowOf(am).setMemoryInfo(info)
+    }
+
+    /**
+     * Registers a few well-known game packages with the package manager so the
+     * launcher's own detection code has real games to find.
+     */
+    private fun installGamePackages(ctx: android.content.Context) {
+        val pm = ctx.packageManager
+        val games = listOf(
+            Triple("com.dts.freefireth", "Free Fire", R.drawable.ic_game_1),
+            Triple("com.tencent.tmgp.pubgmhd", "PUBG MOBILE", R.drawable.ic_game_2),
+            Triple("com.miHoYo.GenshinImpact", "Genshin Impact", R.drawable.ic_game_3),
+            Triple("com.moonton.mobilelegends", "Mobile Legends", R.drawable.ic_game_4)
+        )
+        for ((pkg, gameName, icon) in games) {
+            val info = android.content.pm.PackageInfo().apply {
+                packageName = pkg
+                versionName = "1.0"
+                applicationInfo = android.content.pm.ApplicationInfo().apply {
+                    packageName = pkg
+                    this.nonLocalizedLabel = gameName
+                    this.icon = icon
+                    flags = 0
+                    uid = 10_000 + (pkg.hashCode() and 0x0FFF)
+                    sourceDir = "/data/app/$pkg"
+                }
+            }
+            try {
+                org.robolectric.Shadows.shadowOf(pm).installPackage(info)
+            } catch (t: Throwable) {
+            }
+        }
     }
 
     private fun setStatic(clazz: String, field: String, value: Any) {
