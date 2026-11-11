@@ -70,6 +70,34 @@ class Prefs private constructor(private val sp: SharedPreferences) {
         get() = sp.getFloat("animation_scale", 1.0f)
         set(v) = sp.edit().putFloat("animation_scale", v).apply()
 
+    // ---- Game launcher ---------------------------------------------------
+    /** Packages the user marked as games by hand. */
+    var userGamePackages: Set<String>
+        get() = sp.getStringSet("user_games", emptySet()) ?: emptySet()
+        set(v) = sp.edit().putStringSet("user_games", v).apply()
+
+    /** Per-game profile overrides, stored as "pkg=key;pkg2=key2". */
+    var gameProfileOverrides: Map<String, String>
+        get() {
+            val raw = sp.getString("game_profiles", "") ?: ""
+            if (raw.isEmpty()) return emptyMap()
+            return raw.split(';').mapNotNull { entry ->
+                val p = entry.split('=', limit = 2)
+                if (p.size == 2) p[0] to p[1] else null
+            }.toMap()
+        }
+        set(v) {
+            sp.edit().putString("game_profiles", v.entries.joinToString(";") { "${it.key}=${it.value}" }).apply()
+        }
+
+    var keepScreenOnInGame: Boolean
+        get() = sp.getBoolean("keep_screen_on_game", true)
+        set(v) = sp.edit().putBoolean("keep_screen_on_game", v).apply()
+
+    var showGameHud: Boolean
+        get() = sp.getBoolean("show_game_hud", true)
+        set(v) = sp.edit().putBoolean("show_game_hud", v).apply()
+
     // ---- Cleaner ---------------------------------------------------------
     var autoClean: Boolean
         get() = sp.getBoolean("auto_clean", false)

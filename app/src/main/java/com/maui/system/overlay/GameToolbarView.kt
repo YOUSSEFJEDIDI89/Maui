@@ -81,15 +81,25 @@ class GameToolbarView(
         titleLabel.text = name
     }
 
-    fun update(s: PerfSnapshot) {
-        fpsLabel.text = (if (s.fps > 0) s.fps.toString() else "--") + " FPS"
+    /**
+     * @param reading the real frame rate read from SurfaceFlinger's frame
+     *   timeline. When it is not available we show the truth instead of a
+     *   made-up number.
+     */
+    fun update(s: PerfSnapshot, reading: com.maui.system.core.FpsReading? = null) {
+        val real = reading?.takeIf { it.ok }?.fps ?: 0
+        fpsLabel.text = if (real > 0) "$real FPS" else "FPS --"
         fpsLabel.setTextColor(
             when {
-                s.fps >= 50 -> OverlayTheme.MAUI_GREEN
-                s.fps in 25..49 -> OverlayTheme.MAUI_AMBER
-                else -> OverlayTheme.MAUI_RED
+                real >= 50 -> OverlayTheme.MAUI_GREEN
+                real in 25..49 -> OverlayTheme.MAUI_AMBER
+                real > 0 -> OverlayTheme.MAUI_RED
+                else -> OverlayTheme.TEXT_DIM
             }
         )
         ramLabel.text = Format.size(s.ramUsed)
+        if (reading != null && !reading.ok && reading.note.isNotEmpty()) {
+            ramLabel.text = "${Format.size(s.ramUsed)}"
+        }
     }
 }
