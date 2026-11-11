@@ -24,6 +24,7 @@ import com.maui.system.core.Cleaner
 import com.maui.system.core.DeviceProfiler
 import com.maui.system.core.PerformanceSampler
 import com.maui.system.core.Prefs
+import com.maui.system.core.SurfaceFlingerProbe
 import com.maui.system.util.Format
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -46,6 +47,7 @@ class MauiOverlayService : LifecycleService() {
         const val ACTION_TOGGLE_HUD = "com.maui.system.TOGGLE_HUD"
         const val ACTION_TOGGLE_GAME = "com.maui.system.TOGGLE_GAME"
         const val ACTION_CLEAN = "com.maui.system.CLEAN"
+        const val ACTION_GAME_HUD = "com.maui.system.GAME_HUD"
         const val ACTION_BOOST = "com.maui.system.BOOST"
         const val CHANNEL_ID = "maui_layers"
         private const val NOTIF_ID = 4711
@@ -66,6 +68,16 @@ class MauiOverlayService : LifecycleService() {
         fun togglePanel(context: Context) {
             context.startService(Intent(context, MauiOverlayService::class.java).setAction(ACTION_TOGGLE_PANEL))
         }
+
+        /** Opens the in-game HUD (real FPS + device metrics) over the game. */
+        fun startGameHud(context: Context) {
+            val i = Intent(context, MauiOverlayService::class.java).setAction(ACTION_GAME_HUD)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(i)
+            } else {
+                context.startService(i)
+            }
+        }
     }
 
     private lateinit var prefs: Prefs
@@ -85,6 +97,7 @@ class MauiOverlayService : LifecycleService() {
     private var samplerJob: Job? = null
     private var gameWatchJob: Job? = null
     private var lastGamePackage: String? = null
+    private var lastSnapshot: com.maui.system.core.PerfSnapshot? = null
     private var currentForeground: String? = null
 
     override fun onCreate() {
@@ -107,6 +120,12 @@ class MauiOverlayService : LifecycleService() {
             ACTION_TOGGLE_GAME -> toggleGameMode()
             ACTION_CLEAN -> doClean()
             ACTION_BOOST -> doBoost()
+            ACTION_GAME_HUD -> {
+                startForegroundSafely()
+                showBubble()
+                prefs.gameToolbarEnabled = true
+                if (bubble == null) showBubble()
+            }
             else -> {
                 startForegroundSafely()
                 showBubble()
@@ -413,6 +432,7 @@ class MauiOverlayService : LifecycleService() {
                 sampler.start()
                 while (isActive) {
                     val snap = sampler.sample()
+                    lastSnapshot = snap
                     hud?.update(snap)
                     panel?.update(snap)
                     gameToolbar?.update(snap)
@@ -432,6 +452,7 @@ class MauiOverlayService : LifecycleService() {
 
     private fun updateGameToolbar() {
         val fg = AppHelper.foregroundApp(this) ?: return
+        val reading = SurfaceFlingerProbe.fpsForPackage(fg.packageName)
         currentForeground = fg.packageName
         if (fg.packageName == packageName) {
             hideGameToolbar()
@@ -447,6 +468,7 @@ class MauiOverlayService : LifecycleService() {
                 }
             }
             if (gameToolbar == null) showGameToolbar(fg.label)
+            lastSnapshot?.let { gameToolbar?.update(it, reading) }
         } else {
             hideGameToolbar()
             lastGamePackage = null

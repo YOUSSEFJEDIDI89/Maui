@@ -1,11 +1,15 @@
 package com.maui.system.ui
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.maui.system.R
+import com.maui.system.core.AppHelper
 import com.maui.system.core.AppStorage
+import com.maui.system.core.GameEntry
+import com.maui.system.core.GameProfile
 import com.maui.system.databinding.ItemAppBinding
 import com.maui.system.databinding.ItemFileBinding
 import com.maui.system.databinding.ItemGameBinding
@@ -22,14 +26,6 @@ data class FileEntry(
     val sizeBytes: Long,
     val lastModified: Long,
     val hidden: Boolean = false
-)
-
-/** A detected game. */
-data class GameEntry(
-    val packageName: String,
-    val label: String,
-    val icon: Drawable?,
-    val installed: Boolean
 )
 
 class JunkAdapter(
@@ -180,7 +176,13 @@ class AppAdapter(
 }
 
 class GameAdapter(
-    private val onPlay: (GameEntry) -> Unit
+    private val onPlay: (GameEntry) -> Unit,
+    private val onProfile: (GameEntry) -> Unit,
+    /** Icon source; the launcher uses the real package icon. */
+    private val iconProvider: (GameEntry, Context) -> Drawable? = { entry, ctx ->
+        AppHelper.iconOf(ctx, entry.packageName)
+            ?: com.maui.system.ui.widgets.PlaceholderIconDrawable(ctx, entry.label)
+    }
 ) : RecyclerView.Adapter<GameAdapter.VH>() {
 
     private val items = mutableListOf<GameEntry>()
@@ -200,12 +202,33 @@ class GameAdapter(
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val g = items[position]
+        val ctx = holder.itemView.context
         holder.binding.title.text = g.label
-        holder.binding.subtitle.text = g.packageName
-        holder.binding.icon.setImageDrawable(g.icon)
-        holder.binding.play.text = holder.itemView.context.getString(R.string.games_launch)
+        holder.binding.subtitle.text = if (g.freeFire) {
+            ctx.getString(R.string.games_freefire)
+        } else {
+            g.packageName
+        }
+        holder.binding.icon.setImageDrawable(iconProvider(g, ctx))
+        holder.binding.play.text = ctx.getString(R.string.games_play)
         holder.binding.play.setOnClickListener { onPlay(g) }
         holder.binding.root.setOnClickListener { onPlay(g) }
+
+        holder.binding.profile.text = profileLabel(ctx, g.profile)
+        holder.binding.profile.setTextColor(
+            when (g.profile) {
+                GameProfile.PERFORMANCE -> 0xFF22C55E.toInt()
+                GameProfile.BALANCED -> 0xFF2E7BFF.toInt()
+                GameProfile.SAVER -> 0xFFF59E0B.toInt()
+            }
+        )
+        holder.binding.profile.setOnClickListener { onProfile(g) }
+    }
+
+    private fun profileLabel(ctx: Context, profile: GameProfile): String = when (profile) {
+        GameProfile.PERFORMANCE -> ctx.getString(R.string.games_profile_performance)
+        GameProfile.BALANCED -> ctx.getString(R.string.games_profile_balanced)
+        GameProfile.SAVER -> ctx.getString(R.string.games_profile_saver)
     }
 
     class VH(val binding: ItemGameBinding) : RecyclerView.ViewHolder(binding.root)
