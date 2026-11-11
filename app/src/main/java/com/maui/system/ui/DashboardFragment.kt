@@ -63,6 +63,17 @@ class DashboardFragment : Fragment() {
 
         binding.btnBoost.setOnClickListener { boost() }
 
+        binding.qaClean.setOnClickListener { quickClean() }
+        binding.qaGames.setOnClickListener { switchTo(R.id.nav_games) }
+        binding.qaApps.setOnClickListener { openApps() }
+        binding.qaLayers.setOnClickListener {
+            if (prefs.overlayEnabled) {
+                MauiOverlayService.togglePanel(requireContext())
+            } else {
+                setLayers(true)
+            }
+        }
+
         binding.switchLayers.setOnCheckedChangeListener { btn, checked ->
             if (!btn.isPressed) return@setOnCheckedChangeListener
             setLayers(checked)
@@ -159,6 +170,27 @@ class DashboardFragment : Fragment() {
         refreshSwitches()
     }
 
+    private fun quickClean() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val report = Cleaner.cleanOwnCaches(requireContext())
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.clean_done, "app caches", Format.size(report.freedBytes)),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun openApps() {
+        startActivity(Intent(requireContext(), com.maui.system.ui.AppsActivity::class.java))
+    }
+
+    /** Switches the bottom navigation to another tab. */
+    private fun switchTo(id: Int) {
+        val activity = activity as? com.maui.system.ui.MainActivity ?: return
+        activity.switchTab(id)
+    }
+
     private fun boost() {
         binding.btnBoost.isEnabled = false
         binding.btnBoost.text = getString(R.string.dash_boosting)
@@ -190,7 +222,7 @@ class DashboardFragment : Fragment() {
 
     internal fun render(s: PerfSnapshot) {
         binding.tileRam.statValue.text = Format.size(s.ramUsed)
-        binding.tileRam.statExtra.text = "${s.ramPercent}% \u2022 ${Format.size(s.ramAvailable)} free"
+        binding.tileRam.statExtra.text = "${s.ramPercent}% of ${Format.size(s.ramTotal)}"
         binding.tileCpu.statValue.text = "${s.cpuPercent}%"
         binding.tileCpu.statExtra.text = s.cpuGovernor.ifEmpty { "—" }
         binding.tileTemp.statValue.text = if (s.cpuTempC > 0) String.format("%.0f°C", s.cpuTempC) else "—"
@@ -201,6 +233,21 @@ class DashboardFragment : Fragment() {
         binding.tileBattery.statExtra.text = if (s.charging) "Charging" else "Discharging"
         binding.tileNet.statValue.text = Format.speed(s.netDownBps)
         binding.tileNet.statExtra.text = s.networkType
+
+        binding.tileRam.statBar.progress = s.ramPercent.coerceIn(0, 100)
+        binding.tileCpu.statBar.progress = s.cpuPercent.coerceIn(0, 100)
+        binding.tileTemp.statBar.progress = when {
+            s.cpuTempC <= 0f -> 0
+            s.cpuTempC < 45f -> 45
+            else -> 100
+        }
+        binding.tileFps.statBar.progress = when {
+            s.fps <= 0 -> 0
+            s.fps >= 55 -> 100
+            else -> (s.fps * 100 / 60).coerceIn(0, 100)
+        }
+        binding.tileBattery.statBar.progress = s.batteryPercent.coerceIn(0, 100)
+        binding.tileNet.statBar.progress = 0
     }
 
     override fun onDestroyView() {
