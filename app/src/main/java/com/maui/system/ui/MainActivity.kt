@@ -45,6 +45,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** Switches the visible tab from anywhere in the app. */
+    fun switchTab(id: Int) {
+        binding.bottomNav.selectedItemId = id
+        showFragment(id)
+    }
+
     private fun showFragment(id: Int) {
         if (currentId == id && supportFragmentManager.findFragmentById(R.id.fragment_container) != null) return
         val tx = supportFragmentManager.beginTransaction()
