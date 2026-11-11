@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="18dp"
     app:cardElevation="0dp"
-    app:cardBackgroundColor="#1FFFFFFF">
+    app:cardBackgroundColor="@color/maui_card">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:textSize="10sp"
             android:letterSpacing="0.1"
-            android:alpha="0.65" />
+            android:textColor="@color/maui_text_dim" />
 
         <TextView
             android:id="@+id/stat_value"
@@ -27,14 +27,27 @@
             android:layout_height="wrap_content"
             android:textSize="17sp"
             android:textStyle="bold"
+            android:textColor="@color/maui_text_primary"
             android:layout_marginTop="2dp" />
 
         <TextView
             android:id="@+id/stat_extra"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:alpha="0.55"
-            android:layout_marginTop="1dp" />
+            android:textColor="@color/maui_text_dim"
+            android:layout_marginTop="1dp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/stat_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            app:trackCornerRadius="3dp"
+            app:trackThickness="4dp"
+            app:indicatorColor="#2E7BFF" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
