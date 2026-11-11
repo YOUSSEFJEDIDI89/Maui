@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Semantic tokens (dark) -->
+    <color name="maui_bg">#0B0F1A</color>
+    <color name="maui_bg_alt">#141B2D</color>
+    <color name="maui_card">#1FFFFFFF</color>
+    <color name="maui_card_strong">#F20D1220</color>
+    <color name="maui_stroke">#1FFFFFFF</color>
+    <color name="maui_text_primary">#F2FFFFFF</color>
+    <color name="maui_text_secondary">#A8B0C2</color>
+    <color name="maui_text_dim">#6F7789</color>
+    <color name="maui_chip">#1FFFFFFF</color>
+</resources>

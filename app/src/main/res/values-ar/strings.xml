@@ -86,7 +86,7 @@
     <string name="files_deleted">تم حذف %1$s</string>
     <string name="files_items">%1$d عنصر</string>
 
-    <string name="games_title">تحسين الألعاب</string>
+    <string name="games_title">مشغّل الألعاب</string>
     <string name="games_none">لم يتم اكتشاف أي لعبة. ثبّت ألعابك ثم أعد فتح هذا التبويب.</string>
     <string name="games_launch">ابدأ</string>
     <string name="games_mode_on">وضع الألعاب مفعّل</string>
@@ -158,4 +158,37 @@
     <string name="action_back">رجوع</string>
     <string name="loading">جارٍ التحميل…</string>
     <string name="not_available">—</string>
+    <!-- Game launcher -->
+    <string name="games_add">إضافة لعبة</string>
+    <string name="games_search">ابحث عن لعبة</string>
+    <string name="games_play">ابدأ</string>
+    <string name="games_play_now">ابدأ الآن</string>
+    <string name="games_empty">مفيش ألعاب في المشغّل لسه</string>
+    <string name="games_empty_desc">اضغط "إضافة لعبة" لإضافة أي تطبيق مثبّت للمشغّل، أو ثبّت لعبة وأعد فتح هذا التبويب. ماوي بيتعرّف لوحده على Free Fire و PUBG و Genshin و Mobile Legends و Clash of Clans و Roblox وغيرها.</string>
+    <string name="games_choose">اختر تطبيق للإضافة</string>
+    <string name="games_added">اتضاف للمشغّل</string>
+    <string name="games_optimising">جاري تحسين اللعبة…</string>
+    <string name="games_optimised">تم تطبيق البروفايل</string>
+    <string name="games_freefire">Free Fire</string>
+    <string name="games_freefire_count">%1$d نسخة Free Fire</string>
+    <string name="games_root_hint">الـ Root بيضيف governor و GPU boost وحماية Doze</string>
+    <string name="games_profile_performance">أقصى أداء</string>
+    <string name="games_profile_balanced">متوازن</string>
+    <string name="games_profile_saver">توفير</string>
+    <string name="games_fps_real">إطار/ث حقيقي</string>
+    <string name="games_fps_needs_root">الـ FPS الحقيقي محتاج Root</string>
+    <string name="games_report_title">%1$s · %2$s</string>
+
+    <!-- Dashboard polish -->
+    <string name="dash_health">صحة الجهاز</string>
+    <string name="dash_health_good">ممتاز</string>
+    <string name="dash_health_ok">كويس</string>
+    <string name="dash_health_fair">محمّل</string>
+    <string name="dash_health_bad">مضغوط</string>
+    <string name="dash_quick">إجراءات سريعة</string>
+    <string name="dash_qa_clean">تنظيف</string>
+    <string name="dash_qa_games">ألعاب</string>
+    <string name="dash_qa_layers">الطبقة</string>
+    <string name="dash_qa_apps">تطبيقات</string>
+
 </resources>

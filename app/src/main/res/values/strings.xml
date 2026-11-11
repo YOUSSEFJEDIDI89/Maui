@@ -93,7 +93,7 @@
     <string name="files_items">%1$d items</string>
 
     <!-- Games -->
-    <string name="games_title">Game booster</string>
+    <string name="games_title">Game launcher</string>
     <string name="games_none">No games detected. Install games and reopen this tab.</string>
     <string name="games_launch">Play</string>
     <string name="games_mode_on">Game mode on</string>
@@ -160,6 +160,39 @@
     <string name="details_clear_cache_done">Cache cleared</string>
     <string name="details_root_required">Root required to clear other apps’ caches</string>
     <string name="details_open_settings">Open system settings</string>
+
+    <!-- Game launcher -->
+    <string name="games_add">Add game</string>
+    <string name="games_search">Search games</string>
+    <string name="games_play">Play</string>
+    <string name="games_play_now">Play now</string>
+    <string name="games_empty">No games in the launcher yet</string>
+    <string name="games_empty_desc">Tap “Add game” to add any installed app to the launcher, or install a game and reopen this tab. Maui recognises Free Fire, PUBG, Genshin, Mobile Legends, Clash of Clans, Roblox and more on its own.</string>
+    <string name="games_choose">Pick an app to add</string>
+    <string name="games_added">Added to the launcher</string>
+    <string name="games_optimising">Optimising for this game…</string>
+    <string name="games_optimised">Profile applied</string>
+    <string name="games_freefire">Free Fire</string>
+    <string name="games_freefire_count">%1$d Free Fire build(s)</string>
+    <string name="games_root_hint">Root adds governor, GPU boost and doze protection</string>
+    <string name="games_profile_performance">Performance</string>
+    <string name="games_profile_balanced">Balanced</string>
+    <string name="games_profile_saver">Saver</string>
+    <string name="games_fps_real">Real FPS</string>
+    <string name="games_fps_needs_root">Real FPS needs root</string>
+    <string name="games_report_title">%1$s · %2$s</string>
+
+    <!-- Dashboard polish -->
+    <string name="dash_health">Device health</string>
+    <string name="dash_health_good">Excellent</string>
+    <string name="dash_health_ok">Good</string>
+    <string name="dash_health_fair">Busy</string>
+    <string name="dash_health_bad">Strained</string>
+    <string name="dash_quick">Quick actions</string>
+    <string name="dash_qa_clean">Clean</string>
+    <string name="dash_qa_games">Games</string>
+    <string name="dash_qa_layers">Layers</string>
+    <string name="dash_qa_apps">Apps</string>
 
     <!-- Generic -->
     <string name="action_grant">Grant</string>

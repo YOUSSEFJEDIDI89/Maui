@@ -18,6 +18,17 @@
     <color name="text_primary_dark">#F2FFFFFF</color>
     <color name="text_secondary_dark">#99FFFFFF</color>
 
+    <!-- Semantic tokens (light) -->
+    <color name="maui_bg">#F4F6FC</color>
+    <color name="maui_bg_alt">#E9EDF7</color>
+    <color name="maui_card">#FFFFFFFF</color>
+    <color name="maui_card_strong">#0A1024</color>
+    <color name="maui_stroke">#141A2B</color>
+    <color name="maui_text_primary">#0E1424</color>
+    <color name="maui_text_secondary">#5A6478</color>
+    <color name="maui_text_dim">#8A93A6</color>
+    <color name="maui_chip">#14000000</color>
+
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
     <color name="transparent">#00000000</color>
