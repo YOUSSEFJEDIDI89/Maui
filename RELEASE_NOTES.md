@@ -19,3 +19,9 @@ RAM & game booster.
 3. Open **Maui**, then grant the permissions from **Settings → Permissions**.
 
 SHA-256 of the asset is published in the release body.
+
+**SHA-256 of the release asset:**
+
+```
+2e82ceb1ad4503a2cc5d74b1b04307cf3483d43cfec6c63c5c19082bb0755b28  Maui-v1.0-release.apk
+```

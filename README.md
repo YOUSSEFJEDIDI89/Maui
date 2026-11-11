@@ -69,6 +69,57 @@ system APIs instead of animated counters.
 - **Game Mode** drops window, transition and animator scales to `0` (the single biggest real win against jank), stops background apps, enables the game toolbar and silences notifications through Do Not Disturb.
 - **Real FPS** — sampled from `SurfaceFlinger` when root is available, from the frame callback otherwise.
 
+#### 🎮 Game launcher & game-space engine
+
+A dedicated launcher for the games on the device, built the same way dedicated
+game-space apps work — but with every step **measured and reported**, never
+assumed.
+
+| | |
+|---|---|
+| **Real game list** | Free Fire, PUBG, Genshin, Mobile Legends, Clash of Clans, Roblox, COD and 60+ other titles are recognised automatically, and *any* installed app can be added by hand with **Add game**. |
+| **Per-game profiles** | `Performance` · `Balanced` · `Battery saver` — tap the chip under a game to switch. The choice is remembered per game. |
+| **Launch = optimise** | Pressing **Play** applies the profile to the OS *before* the game starts, then launches it and opens the in-game HUD. |
+
+What each profile actually does on the device:
+
+- **Memory released** — every background process that is not the foreground app
+  is killed, and the delta in available memory is measured and shown.
+- **Animations off** — the animator, window and transition scales are set to `0`
+  and read back to confirm it took.
+- **Refresh rate** — the panel is pushed to the fastest mode the display
+  actually reports (`peak_refresh_rate` / `min_refresh_rate`), and the new
+  rate is read back.
+- **Do Not Disturb** — notifications are silenced while you play.
+- **Screen stays on** — the screen timeout is extended for the session and
+  restored afterwards.
+- **With root, additionally:** CPU governor → `performance`, GPU boost on the
+  vendor's own control nodes, **Doze protection** for the game
+  (`dumpsys deviceidle whitelist`), **standby bucket → active** so the game gets
+  maximum RAM priority, and a system-wide cache trim.
+
+After every launch Maui shows a report listing each step as applied or skipped
+**with the reason** — no step is ever reported as successful when it was not.
+
+#### 📈 Real FPS
+
+The in-game HUD reads the frame rate from **SurfaceFlinger's frame timeline**
+(`dumpsys SurfaceFlinger --latency <layer>`), which is the only accurate way to
+measure another app's FPS on Android. The layer belonging to the running game is
+picked automatically from the compositor's layer list.
+
+Without root that timeline is not readable, and Maui says so (`FPS --`) instead
+of showing a number it cannot measure.
+
+#### 🔥 Free Fire support
+
+Free Fire builds (`com.dts.freefireth`, `com.dts.freefiremax`,
+`com.garena.game.kfire` and friends) are detected and flagged in the launcher,
+and they get the full profile **plus** a dedicated pass that flushes background
+processes and inspects the game's memory, on top of the Doze protection and
+active standby bucket — the three things that make Free Fire stutter on
+mid-range devices.
+
 #### 📂 Files & 📦 Apps
 - Built-in browser: internal storage, SD card, hidden-only, large-files-only and duplicates-only views, with delete (confirmed) and share via `FileProvider`.
 - App manager with a per-app **app / cache / data** breakdown from `StorageStatsManager`, search, sort by size or name, force-stop, clear cache and uninstall.
@@ -95,7 +146,7 @@ git clone https://github.com/YOUSSEFJEDIDI89/Maui.git
 cd Maui/release
 cat Maui-v1.0-release.apk.b64.* | base64 -d > Maui-v1.0-release.apk
 sha256sum Maui-v1.0-release.apk
-# 8c2adb5794aa885b235680bba94de2e18c077c1d67f82666e93e55f3bac518b0
+# 2e82ceb1ad4503a2cc5d74b1b04307cf3483d43cfec6c63c5c19082bb0755b28
 ```
 
 Then, on the phone: open the APK, allow "install from unknown sources", install, and
