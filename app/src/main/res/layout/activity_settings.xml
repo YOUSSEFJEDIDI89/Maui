@@ -45,7 +45,7 @@
             android:layout_marginTop="8dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#1FFFFFFF">
+            app:cardBackgroundColor="@color/maui_card">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -90,7 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginVertical="12dp"
-                    android:background="#1FFFFFFF" />
+                    android:background="@color/maui_card" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -170,7 +170,7 @@
             android:layout_marginTop="8dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#1FFFFFFF">
+            app:cardBackgroundColor="@color/maui_card">
 
             <RadioGroup
                 android:id="@+id/theme_group"
@@ -213,7 +213,7 @@
             android:layout_marginBottom="24dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#1FFFFFFF">
+            app:cardBackgroundColor="@color/maui_card">
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="16dp"
-    android:paddingTop="16dp">
+    android:paddingHorizontal="12dp"
+    android:paddingTop="12dp">
 
     <TextView
         android:id="@+id/title"
@@ -12,29 +12,79 @@
         android:layout_height="wrap_content"
         android:text="@string/games_title"
         style="@style/Text.Maui.Title"
+        android:textSize="21sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_add" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_add"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:minWidth="0dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:paddingHorizontal="14dp"
+        android:text="@string/games_add"
+        android:textSize="12sp"
+        app:cornerRadius="14dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/search_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/games_search"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textSize="13sp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/status"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
         android:textSize="12sp"
         android:alpha="0.7"
-        android:layout_marginTop="2dp"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/search_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/status"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/mode_card"
+        android:id="@+id/empty_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginHorizontal="8dp"
+        android:visibility="gone"
         app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
-        app:cardBackgroundColor="#1FFFFFFF"
+        app:cardBackgroundColor="@color/maui_card"
         app:layout_constraintTop_toBottomOf="@id/status"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -43,62 +93,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/dash_game_mode"
-                    style="@style/Text.Maui.Title"
-                    android:textSize="15sp" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/switch_game_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+                android:text="@string/games_empty"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/dash_game_mode_desc"
+                android:text="@string/games_empty_desc"
                 style="@style/Text.Maui.Body"
-                android:layout_marginTop="4dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/games_fps_hint"
-                android:textSize="11sp"
-                android:alpha="0.6"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="6dp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
-    <TextView
-        android:id="@+id/list_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        style="@style/Text.Maui.Section"
-        android:layout_marginTop="18dp"
-        app:layout_constraintTop_toBottomOf="@id/mode_card"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="6dp"
-        app:layout_constraintTop_toBottomOf="@id/list_title"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

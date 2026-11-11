@@ -13,52 +13,76 @@
         android:orientation="vertical">
 
         <!-- Header -->
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_header_gradient"
-            android:padding="20dp"
-            android:paddingBottom="26dp">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/header_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dash_title"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFFFF"
-                android:letterSpacing="0.04" />
+            <com.maui.system.ui.widgets.AuroraHeaderView
+                android:id="@+id/aurora"
+                android:layout_width="match_parent"
+                android:layout_height="212dp" />
 
-            <TextView
-                android:id="@+id/header_subtitle"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/app_tagline"
-                android:textSize="12.5sp"
-                android:textColor="#D9FFFFFF"
-                android:layout_marginTop="2dp" />
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:paddingBottom="26dp"
+                android:gravity="top">
 
-            <TextView
-                android:id="@+id/header_device"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="11.5sp"
-                android:textColor="#B3FFFFFF"
-                android:layout_marginTop="10dp" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/header_root"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="11sp"
-                android:textColor="#FFFFFFFF"
-                android:background="@drawable/bg_chip"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:layout_marginTop="8dp" />
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/header_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dash_title"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFFFF"
+                        android:letterSpacing="0.04" />
+
+                    <TextView
+                        android:id="@+id/header_subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_tagline"
+                        android:textSize="12.5sp"
+                        android:textColor="#D9FFFFFF"
+                        android:layout_marginTop="2dp" />
+
+                    <TextView
+                        android:id="@+id/header_device"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="11.5sp"
+                        android:textColor="#B3FFFFFF"
+                        android:layout_marginTop="10dp" />
+
+                    <TextView
+                        android:id="@+id/header_root"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="#FFFFFFFF"
+                        android:background="@drawable/bg_chip"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+
+                <com.maui.system.ui.widgets.HealthRingView
+                    android:id="@+id/health_ring"
+                    android:layout_width="104dp"
+                    android:layout_height="104dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginStart="10dp" />
+            </LinearLayout>
+        </FrameLayout>
 
         <!-- Boost button -->
         <com.google.android.material.button.MaterialButton
@@ -73,6 +97,82 @@
             app:cornerRadius="18dp"
             app:icon="@drawable/ic_maui_stat"
             app:iconGravity="textStart" />
+
+
+        <!-- Quick actions -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dash_quick"
+            style="@style/Text.Maui.Section"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:baselineAligned="false">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/qa_clean"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/dash_qa_clean"
+                android:maxLines="1"
+                android:paddingHorizontal="2dp"
+                android:textSize="11sp"
+                app:cornerRadius="15dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/qa_games"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="6dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/dash_qa_games"
+                android:maxLines="1"
+                android:paddingHorizontal="2dp"
+                android:textSize="11sp"
+                app:cornerRadius="15dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/qa_layers"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/dash_qa_layers"
+                android:maxLines="1"
+                android:paddingHorizontal="2dp"
+                android:textSize="11sp"
+                app:cornerRadius="15dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/qa_apps"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/dash_qa_apps"
+                android:maxLines="1"
+                android:paddingHorizontal="2dp"
+                android:textSize="11sp"
+                app:cornerRadius="15dp" />
+        </LinearLayout>
 
         <!-- Live performance -->
         <TextView
@@ -152,7 +252,7 @@
             android:layout_margin="16dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#1FFFFFFF">
+            app:cardBackgroundColor="@color/maui_card">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -206,7 +306,7 @@
             android:layout_marginBottom="10dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#1FFFFFFF">
+            app:cardBackgroundColor="@color/maui_card">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -259,7 +359,7 @@
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#1FFFFFFF">
+            app:cardBackgroundColor="@color/maui_card">
 
             <LinearLayout
                 android:layout_width="match_parent"
