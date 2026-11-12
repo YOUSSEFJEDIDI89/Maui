@@ -17,9 +17,10 @@
 ---
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" width="260" alt="Maui dashboard">
-  <img src="docs/screenshots/cleaner.png" width="260" alt="Maui cleaner">
-  <img src="docs/screenshots/layers.png" width="260" alt="Maui Layers overlay">
+  <img src="docs/screenshots/dashboard.png" width="230" alt="Maui dashboard">
+  <img src="docs/screenshots/games.png" width="230" alt="Maui game launcher">
+  <img src="docs/screenshots/cleaner.png" width="230" alt="Maui cleaner">
+  <img src="docs/screenshots/hud-game.png" width="230" alt="Maui in-game HUD">
 </p>
 
 > **Screenshots** are rendered by CI straight from the running app (Robolectric native
