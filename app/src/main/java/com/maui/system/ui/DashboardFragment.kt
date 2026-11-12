@@ -32,6 +32,8 @@ class DashboardFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var prefs: Prefs
     private lateinit var sampler: PerformanceSampler
+    private var lastProfile: DeviceProfile? = null
+    private var lastSnapshot: PerfSnapshot? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,6 +90,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun updateStorage(profile: DeviceProfile) {
+        lastProfile = profile
         binding.storageText.text = Format.size(profile.internalUsed) + " / " + Format.size(profile.internalTotal)
         binding.storageBar.progress = profile.internalUsedPercent
         binding.storageExtra.text = buildString {
@@ -97,6 +100,19 @@ class DashboardFragment : Fragment() {
                 append(" free of ").append(Format.size(profile.externalTotal))
             }
         }
+        refreshHealthRing()
+    }
+
+    /** Feeds the header ring with the real readings — never a hard-coded score. */
+    private fun refreshHealthRing() {
+        val profile = lastProfile ?: return
+        val snap = lastSnapshot
+        binding.healthRing.update(
+            ramPercent = profile.ramUsedPercent,
+            cpuPercent = snap?.cpuPercent ?: 0,
+            tempC = snap?.cpuTempC ?: 0f,
+            storagePercent = profile.internalUsedPercent
+        )
     }
 
     private fun refreshSwitches() {
@@ -221,6 +237,8 @@ class DashboardFragment : Fragment() {
     }
 
     internal fun render(s: PerfSnapshot) {
+        lastSnapshot = s
+        refreshHealthRing()
         binding.tileRam.statValue.text = Format.size(s.ramUsed)
         binding.tileRam.statExtra.text = "${s.ramPercent}% of ${Format.size(s.ramTotal)}"
         binding.tileCpu.statValue.text = "${s.cpuPercent}%"
