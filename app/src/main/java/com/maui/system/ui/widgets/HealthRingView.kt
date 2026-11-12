@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import com.maui.system.R
 import android.graphics.SweepGradient
 import android.graphics.Typeface
 import android.util.AttributeSet
@@ -41,6 +42,7 @@ class HealthRingView @JvmOverloads constructor(
 
     private var score = 100
     private var caption = ""
+    private var measured = false
     private var sweep: SweepGradient? = null
 
     init {
@@ -58,30 +60,42 @@ class HealthRingView @JvmOverloads constructor(
         invalidate()
     }
 
-    /** Builds the score from the live device readings. */
+    /**
+     * Builds the score from the live device readings.
+     *
+     * Only the readings that are actually available take part in the score, and
+     * their weights are re-normalised — a device that cannot report its
+     * temperature is never scored as if it were perfectly cool.
+     */
     fun update(
         ramPercent: Int,
         cpuPercent: Int,
         tempC: Float,
         storagePercent: Int
     ) {
-        // Pressure only: free RAM, idle CPU, cool device, room on disk.
-        val ramPart = (100 - ramPercent).coerceAtLeast(0)
-        val cpuPart = (100 - cpuPercent).coerceAtLeast(0)
-        val tempPart = when {
-            tempC <= 0f -> 100
-            tempC < 40f -> 100
-            tempC < 50f -> (100 - (tempC - 40f) * 6).toInt().coerceIn(30, 100)
-            else -> (100 - (tempC - 50f) * 10).toInt().coerceIn(0, 100)
+        val parts = mutableListOf<Pair<Int, Double>>()
+        parts += (100 - ramPercent).coerceIn(0, 100) to 0.35
+        parts += (100 - storagePercent).coerceIn(0, 100) to 0.20
+        if (cpuPercent > 0) parts += (100 - cpuPercent).coerceIn(0, 100) to 0.20
+        if (tempC > 0f) {
+            val tempPart = when {
+                tempC < 40f -> 100
+                tempC < 50f -> (100 - (tempC - 40f) * 6).toInt().coerceIn(30, 100)
+                else -> (100 - (tempC - 50f) * 10).toInt().coerceIn(0, 100)
+            }
+            parts += tempPart to 0.25
         }
-        val storagePart = (100 - storagePercent).coerceAtLeast(0)
-        val total = (ramPart * 0.35 + cpuPart * 0.2 + tempPart * 0.25 + storagePart * 0.2).toInt()
-        val caption = when {
-            total >= 85 -> "Excellent"
-            total >= 65 -> "Good"
-            total >= 45 -> "Busy"
-            else -> "Strained"
-        }
+        val weight = parts.sumOf { it.second }
+        val total = if (weight <= 0.0) 0 else (parts.sumOf { it.first * it.second } / weight).toInt()
+        val caption = context.getString(
+            when {
+                total >= 85 -> R.string.dash_health_good
+                total >= 65 -> R.string.dash_health_ok
+                total >= 45 -> R.string.dash_health_fair
+                else -> R.string.dash_health_bad
+            }
+        )
+        measured = true
         setHealth(total, caption)
     }
 
@@ -119,10 +133,11 @@ class HealthRingView @JvmOverloads constructor(
             score >= 45 -> 0xFFF59E0B.toInt().toInt()
             else -> 0xFFEF4444.toInt().toInt()
         }
-        canvas.drawText("$score", centerX, centerY + valueText.textSize * 0.18f, valueText)
+        val number = if (measured) "$score" else "—"
+        canvas.drawText(number, centerX, centerY + valueText.textSize * 0.18f, valueText)
 
         // The caption sits inside the ring, under the number.
         labelText.color = 0xD9FFFFFF.toInt()
-        canvas.drawText(caption, centerX, centerY + valueText.textSize * 0.18f + d * 13f, labelText)
+        if (measured) canvas.drawText(caption, centerX, centerY + valueText.textSize * 0.18f + d * 13f, labelText)
     }
 }
