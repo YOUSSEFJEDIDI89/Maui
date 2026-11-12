@@ -17,9 +17,10 @@
 ---
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" width="260" alt="شاشة الرئيسية">
-  <img src="docs/screenshots/cleaner.png" width="260" alt="شاشة التنظيف">
-  <img src="docs/screenshots/layers.png" width="260" alt="طبقة ماوي">
+  <img src="docs/screenshots/dashboard.png" width="230" alt="شاشة الرئيسية">
+  <img src="docs/screenshots/games.png" width="230" alt="مشغّل الألعاب">
+  <img src="docs/screenshots/cleaner.png" width="230" alt="شاشة التنظيف">
+  <img src="docs/screenshots/hud-game.png" width="230" alt="واجهة الأداء داخل اللعبة">
 </p>
 
 > **الصور** بيتولّدها الـ CI من التطبيق نفسه وهو شغّال (Robolectric native graphics — نفس
