@@ -62,6 +62,31 @@ class SettingsActivity : AppCompatActivity() {
             prefs.gameToolbarEnabled = checked
         }
 
+        binding.switchSessions.isChecked = prefs.trackSessions
+        binding.switchSessions.setOnCheckedChangeListener { _, checked ->
+            prefs.trackSessions = checked
+        }
+
+        binding.switchToolsPanel.isChecked = prefs.showToolsPanel
+        binding.switchToolsPanel.setOnCheckedChangeListener { _, checked ->
+            prefs.showToolsPanel = checked
+        }
+
+        binding.switchBrightness.isChecked = prefs.brightnessLock
+        binding.switchBrightness.setOnCheckedChangeListener { _, checked ->
+            prefs.brightnessLock = checked
+            if (checked) {
+                val res = com.maui.system.core.GameTools.lockBrightness(this, true)
+                if (!res.applied) {
+                    prefs.brightnessLock = false
+                    binding.switchBrightness.isChecked = false
+                    android.widget.Toast.makeText(this, res.detail, android.widget.Toast.LENGTH_LONG).show()
+                }
+            } else {
+                com.maui.system.core.GameTools.lockBrightness(this, false)
+            }
+        }
+
         binding.sliderSize.value = prefs.bubbleSize.toFloat().coerceIn(40f, 96f)
         binding.sliderSize.addOnChangeListener { _, value, _ ->
             prefs.bubbleSize = value.toInt()

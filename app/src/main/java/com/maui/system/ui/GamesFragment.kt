@@ -41,6 +41,7 @@ class GamesFragment : Fragment() {
     private lateinit var prefs: Prefs
     private lateinit var adapter: GameAdapter
     private var all: List<GameEntry> = emptyList()
+    private val sessions by lazy { com.maui.system.core.GameSessionStore.get(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,12 +57,16 @@ class GamesFragment : Fragment() {
 
         adapter = GameAdapter(
             onPlay = { game -> play(game) },
-            onProfile = { game -> cycleProfile(game) }
+            onProfile = { game -> cycleProfile(game) },
+            onFavourite = { game -> toggleFavourite(game) },
+            favouriteProvider = { prefs.favouriteGames.contains(it.packageName) },
+            playtimeProvider = { game -> playTimeOf(game.packageName) }
         )
         binding.list.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.list.adapter = adapter
 
         binding.btnAdd.setOnClickListener { showAddGameDialog() }
+        binding.btnVfps.setOnClickListener { VfpsActivity.open(requireContext()) }
         binding.search.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
@@ -88,10 +93,32 @@ class GamesFragment : Fragment() {
         }
     }
 
+    /** The total time this game was played, from the session history. */
+    private fun playTimeOf(packageName: String): String {
+        val seconds = sessions.history()
+            .filter { it.packageName == packageName }
+            .sumOf { it.seconds }
+        if (seconds <= 0) return ""
+        val minutes = seconds / 60
+        return if (minutes >= 60) {
+            getString(R.string.games_playtime, "${minutes / 60}h ${minutes % 60}m")
+        } else {
+            getString(R.string.games_playtime, "${minutes}m")
+        }
+    }
+
+    /** Marks a game as a favourite and puts the favourites on top. */
+    private fun toggleFavourite(game: GameEntry) {
+        val current = prefs.favouriteGames.toMutableSet()
+        if (!current.add(game.packageName)) current.remove(game.packageName)
+        prefs.favouriteGames = current
+        load()
+    }
+
     private fun render() {
         val query = binding.search.text?.toString()?.trim()?.lowercase() ?: ""
         val list = if (query.isEmpty()) {
-            all
+            all.sortedByDescending { prefs.favouriteGames.contains(it.packageName) }
         } else {
             all.filter {
                 it.label.lowercase().contains(query) || it.packageName.lowercase().contains(query)
@@ -141,6 +168,10 @@ class GamesFragment : Fragment() {
                     keepScreenOn = prefs.keepScreenOnInGame,
                     isFreeFire = game.freeFire
                 )
+            }
+            if (prefs.trackSessions) {
+                val battery = com.maui.system.core.DeviceProfiler.batterySnapshot(requireContext()).first
+                sessions.start(game.packageName, game.label, game.profile.key, battery)
             }
             AppHelper.launchApp(requireContext(), game.packageName)
             if (prefs.showGameHud) {
