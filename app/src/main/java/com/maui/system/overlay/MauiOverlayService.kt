@@ -30,6 +30,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Maui Layers — the system that lives on top of Android.
@@ -88,11 +90,17 @@ class MauiOverlayService : LifecycleService() {
     private var panel: MauiPanelView? = null
     private var hud: HudView? = null
     private var gameToolbar: GameToolbarView? = null
+    private var toolsPanel: GameToolsPanelView? = null
+    private var crosshair: CrosshairView? = null
+    private var stopwatch: StopwatchView? = null
 
     private var bubbleParams: WindowManager.LayoutParams? = null
     private var panelParams: WindowManager.LayoutParams? = null
     private var hudParams: WindowManager.LayoutParams? = null
     private var gameParams: WindowManager.LayoutParams? = null
+    private var toolsParams: WindowManager.LayoutParams? = null
+    private var crosshairParams: WindowManager.LayoutParams? = null
+    private var stopwatchParams: WindowManager.LayoutParams? = null
 
     private var samplerJob: Job? = null
     private var gameWatchJob: Job? = null
@@ -303,6 +311,7 @@ class MauiOverlayService : LifecycleService() {
             override fun onBoost() { doBoost() }
             override fun onClean() { doClean() }
             override fun onToggleHud() { toggleHud() }
+            override fun onTools() { toggleToolsPanel() }
             override fun onExitGame() { stopEverything() }
         }
         val view = GameToolbarView(this, actions)
@@ -332,6 +341,172 @@ class MauiOverlayService : LifecycleService() {
         val v = gameToolbar ?: return
         try { windowManager.removeView(v) } catch (t: Throwable) { }
         gameToolbar = null
+    }
+
+    // ------------------------------------------------------------ tool panel
+
+    /** The in-game tool grid — Maui's "Energy Cube". */
+    private fun toggleToolsPanel() {
+        if (toolsPanel != null) hideToolsPanel() else showToolsPanel()
+    }
+
+    private fun showToolsPanel() {
+        if (toolsPanel != null) return
+        val actions = object : GameToolsPanelView.Actions {
+            override fun onTool(id: String) = handleTool(id)
+            override fun onClose() = hideToolsPanel()
+            override fun onStatus(text: String) { }
+        }
+        val view = GameToolsPanelView(this, actions)
+        val metrics = resources.displayMetrics
+        val p = WindowManager.LayoutParams(
+            (metrics.widthPixels - OverlayTheme.dp(this, 24f)).coerceAtMost(OverlayTheme.dp(this, 420f)),
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            overlayType(),
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.TOP or Gravity.END
+            x = OverlayTheme.dp(this@MauiOverlayService, 12f)
+            y = OverlayTheme.dp(this@MauiOverlayService, 56f)
+        }
+        try {
+            windowManager.addView(view, p)
+            toolsPanel = view
+            toolsParams = p
+        } catch (t: Throwable) {
+            toolsPanel = null
+        }
+    }
+
+    private fun hideToolsPanel() {
+        val v = toolsPanel ?: return
+        try { windowManager.removeView(v) } catch (t: Throwable) { }
+        toolsPanel = null
+    }
+
+    /** Runs one of the tools of the panel. */
+    private fun handleTool(id: String) {
+        when (id) {
+            GameToolsPanelView.Tool.BOOST -> {
+                val pkg = currentForeground
+                lifecycleScope.launch {
+                    val report = com.maui.system.core.VfpsEngine.boost(
+                        this@MauiOverlayService,
+                        pkg,
+                        com.maui.system.core.GameProfile.PERFORMANCE
+                    )
+                    val applied = report.steps.count { it.applied }
+                    val skipped = report.steps.count { !it.applied }
+                    toolsPanel?.report(
+                        "boost: $applied steps applied, $skipped skipped • ceiling ${report.after.vfps} Hz"
+                    )
+                }
+            }
+            GameToolsPanelView.Tool.HUD -> toggleHud()
+            GameToolsPanelView.Tool.VFPS -> openMaui(com.maui.system.ui.VfpsActivity::class.java)
+            GameToolsPanelView.Tool.CROSSHAIR -> toggleCrosshair()
+            GameToolsPanelView.Tool.STOPWATCH -> toggleStopwatch()
+            GameToolsPanelView.Tool.SCREENSHOT -> requestScreenshot()
+            GameToolsPanelView.Tool.TASKS -> showRunningTasks()
+            else -> Unit
+        }
+    }
+
+    // ------------------------------------------------------------- crosshair
+
+    private fun toggleCrosshair() {
+        if (crosshair != null) {
+            try { windowManager.removeView(crosshair) } catch (t: Throwable) { }
+            crosshair = null
+            toolsPanel?.mark(GameToolsPanelView.Tool.CROSSHAIR, false)
+            return
+        }
+        val view = CrosshairView(this)
+        val size = OverlayTheme.dp(this, 48f)
+        val p = WindowManager.LayoutParams(
+            size, size,
+            overlayType(),
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.CENTER
+        }
+        try {
+            windowManager.addView(view, p)
+            crosshair = view
+            crosshairParams = p
+            toolsPanel?.mark(GameToolsPanelView.Tool.CROSSHAIR, true)
+        } catch (t: Throwable) {
+            crosshair = null
+        }
+    }
+
+    // ------------------------------------------------------------ stopwatch
+
+    private fun toggleStopwatch() {
+        if (stopwatch != null) {
+            try { windowManager.removeView(stopwatch) } catch (t: Throwable) { }
+            stopwatch = null
+            toolsPanel?.mark(GameToolsPanelView.Tool.STOPWATCH, false)
+            return
+        }
+        val view = StopwatchView(this)
+        val p = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            overlayType(),
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.TOP or Gravity.START
+            x = OverlayTheme.dp(this@MauiOverlayService, 12f)
+            y = OverlayTheme.dp(this@MauiOverlayService, 64f)
+        }
+        try {
+            windowManager.addView(view, p)
+            stopwatch = view
+            stopwatchParams = p
+            view.start()
+            toolsPanel?.mark(GameToolsPanelView.Tool.STOPWATCH, true)
+        } catch (t: Throwable) {
+            stopwatch = null
+        }
+    }
+
+    // -------------------------------------------------------------- capture
+
+    /** Asks for the screen-capture consent and saves a real screenshot. */
+    private fun requestScreenshot() {
+        try {
+            val i = Intent(this, com.maui.system.ui.ScreenshotActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(i)
+        } catch (t: Throwable) {
+            toolsPanel?.report("the screen capture screen could not be opened")
+        }
+    }
+
+    // ---------------------------------------------------------- task manager
+
+    /** Lists the running user processes inside the panel, and kills on tap. */
+    private fun showRunningTasks() {
+        lifecycleScope.launch {
+            val list = withContext(Dispatchers.Default) {
+                com.maui.system.core.GameTools.runningProcesses(this@MauiOverlayService)
+                    .filter { it.importance >= android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_CACHED }
+                    .take(12)
+            }
+            toolsPanel?.showProcesses(list) { process ->
+                val res = com.maui.system.core.GameTools.killProcess(this@MauiOverlayService, process.name)
+                toolsPanel?.report(res.detail)
+            }
+        }
     }
 
     // ------------------------------------------------------------- actions
@@ -436,6 +611,7 @@ class MauiOverlayService : LifecycleService() {
                     hud?.update(snap)
                     panel?.update(snap)
                     gameToolbar?.update(snap)
+                    stopwatch?.refresh()
                     delay(1000)
                 }
             }
@@ -468,11 +644,45 @@ class MauiOverlayService : LifecycleService() {
                 }
             }
             if (gameToolbar == null) showGameToolbar(fg.label)
-            lastSnapshot?.let { gameToolbar?.update(it, reading) }
+            val ceiling = com.maui.system.core.VfpsEngine.panelCeiling(this)
+            lastSnapshot?.let { gameToolbar?.update(it, reading, ceiling) }
+            trackSession(fg.packageName, fg.label)
         } else {
             hideGameToolbar()
             lastGamePackage = null
+            endSession()
         }
+    }
+
+    /**
+     * Starts a session when a game comes to the front and ends it when the
+     * game leaves. The numbers stored are the ones that were measured.
+     */
+    private fun trackSession(packageName: String, label: String) {
+        if (!prefs.trackSessions) return
+        val store = com.maui.system.core.GameSessionStore.get(this)
+        val current = store.current()
+        if (current == null) {
+            val battery = com.maui.system.core.DeviceProfiler.batterySnapshot(this).first
+            store.start(packageName, label, "auto", battery)
+        } else if (current.packageName != packageName) {
+            endSession()
+            val battery = com.maui.system.core.DeviceProfiler.batterySnapshot(this).first
+            store.start(packageName, label, "auto", battery)
+        }
+        // Fold the measured frame rate into the session.
+        val reading = com.maui.system.core.SurfaceFlingerProbe.fpsForPackage(packageName)
+        if (reading.ok) {
+            store.sample(reading.fps, 0f, com.maui.system.core.VfpsEngine.batteryTemp(this))
+        }
+    }
+
+    private fun endSession() {
+        if (!prefs.trackSessions) return
+        val store = com.maui.system.core.GameSessionStore.get(this)
+        if (store.current() == null) return
+        val battery = com.maui.system.core.DeviceProfiler.batterySnapshot(this).first
+        store.finish(battery, 0L)
     }
 
     // ---------------------------------------------------------- lifecycle
