@@ -40,4 +40,7 @@ object Format {
         SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(millis))
 
     fun speed(bytesPerSecond: Long): String = size(bytesPerSecond) + "/s"
+
+    /** A refresh rate, printed the way a panel would show it. */
+    fun hz(hz: Float): String = if (hz <= 0f) "-- Hz" else "${"%.0f".format(hz)} Hz"
 }
