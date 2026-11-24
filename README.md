@@ -17,10 +17,12 @@
 ---
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" width="230" alt="Maui dashboard">
-  <img src="docs/screenshots/games.png" width="230" alt="Maui game launcher">
-  <img src="docs/screenshots/cleaner.png" width="230" alt="Maui cleaner">
-  <img src="docs/screenshots/hud-game.png" width="230" alt="Maui in-game HUD">
+  <img src="docs/screenshots/dashboard.png" width="200" alt="Maui dashboard">
+  <img src="docs/screenshots/vfps.png" width="200" alt="VFPS frame provider">
+  <img src="docs/screenshots/games.png" width="200" alt="Maui game launcher">
+  <img src="docs/screenshots/tools.png" width="200" alt="In-game tool panel">
+  <img src="docs/screenshots/cleaner.png" width="200" alt="Maui cleaner">
+  <img src="docs/screenshots/hud-game.png" width="200" alt="Maui in-game HUD">
 </p>
 
 > **Screenshots** are rendered by CI straight from the running app (Robolectric native
@@ -121,6 +123,72 @@ processes and inspects the game's memory, on top of the Doze protection and
 active standby bucket — the three things that make Free Fire stutter on
 mid-range devices.
 
+#### ⚡ VFPS — the frame provider
+
+**VFPS** is the *vertical refresh* rate: the ceiling the display can physically
+present — 60, 90, 120 or 144 Hz. It is the same word the emulator world uses
+for the vsync rate, and it is a hard limit: no app can put more presented
+frames on a 120 Hz panel than 120 per second.
+
+So Maui measures **two** numbers instead of printing one:
+
+| | |
+|---|---|
+| **VFPS** | the ceiling of your panel, read from its supported modes. |
+| **RFPS** | what the game really rendered, read from the compositor's own frame timeline. |
+
+RFPS can legitimately be *higher* than VFPS on a device that renders faster
+than the panel refreshes — that is the only honest way a counter can ever show
+a number like "200+". Maui never prints an invented "999+ FPS"; it prints the
+ceiling, the measured rate, how much of the ceiling is in use, the **1% low**,
+the **jank share** and the **frame-pacing deviation** — the numbers that
+decide whether a game feels smooth or not.
+
+The VFPS screen also shows the live **frame-time graph**: every real frame
+duration with the frame budget drawn across it, and the red band where the
+frames start dropping.
+
+**Boost to VFPS** applies the real changes and reports each one:
+
+- the panel is pushed to its fastest supported mode and the setting is read back;
+- the background processes are killed and the freed memory is measured;
+- the system animations are set to zero;
+- the notifications are silenced and the screen is kept awake;
+- with root: the CPU governor goes to `performance`, the vendor GPU boost is
+  raised, the game is kept out of Doze and gets maximum RAM priority;
+- the thermal state is reported, because a hot phone throttles below the
+  ceiling no matter what the app does.
+
+#### 🧰 The game tools
+
+The in-game panel (the 🧰 button on the game toolbar) puts the tools a
+game-space app keeps one tap away:
+
+| Tool | What it really does |
+|---|---|
+| 🧹 Close apps | kills the cached processes and measures the memory that came back |
+| ⚡ Boost | the full VFPS boost, with the report |
+| 📊 Monitor | the live HUD with the real frame rate |
+| VFPS | opens the frame provider screen |
+| 🔕 Quiet | Do Not Disturb while you play |
+| 🔆 Brightness | locks the brightness and turns auto-brightness off |
+| 🔄 Rotate | freezes the rotation (free / portrait / landscape) |
+| 🔊 Audio | raises the game audio over the normal maximum |
+| 📵 Ringer | silences the ringer and the notification sound |
+| 📶 Wi-Fi | turns Wi-Fi on or off (on Android 10+ it opens the Wi-Fi screen) |
+| 🅑 Bluetooth | turns Bluetooth on or off |
+| 📶 Ping | a real latency measurement — the TCP handshake is timed |
+| ➕ Crosshair | a crosshair on the screen |
+| ⏱ Timer | a stopwatch over the game |
+| 📷 Capture | a real screenshot, saved to Pictures/Maui |
+| 🗂 Tasks | the running processes, tap one to stop it |
+| 🎮 Booster | opens your device maker's own game booster (touch sampling, vendor GPU boost) |
+| 🌡 Heat | the thermal state of the phone |
+
+**What is deliberately missing:** automatic aiming, auto-firing and macros that
+play for you. They break the rules of every competitive game and get the
+account banned — Maui is a system layer, not a cheat.
+
 #### 📂 Files & 📦 Apps
 - Built-in browser: internal storage, SD card, hidden-only, large-files-only and duplicates-only views, with delete (confirmed) and share via `FileProvider`.
 - App manager with a per-app **app / cache / data** breakdown from `StorageStatsManager`, search, sort by size or name, force-stop, clear cache and uninstall.
@@ -147,7 +215,7 @@ git clone https://github.com/YOUSSEFJEDIDI89/Maui.git
 cd Maui/release
 cat Maui-v1.0-release.apk.b64.* | base64 -d > Maui-v1.0-release.apk
 sha256sum Maui-v1.0-release.apk
-# 3089ef3794141768b4a4d262c32036c4c62c2f7df7c1849196c696aa18e3b216
+# e43da3ef1b9073ed2e40a5f03171553a6efb2146d62d57c9915f3b6853fa74e4
 ```
 
 Then, on the phone: open the APK, allow "install from unknown sources", install, and

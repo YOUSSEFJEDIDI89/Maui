@@ -23,5 +23,5 @@ SHA-256 of the asset is published in the release body.
 **SHA-256 of the release asset:**
 
 ```
-3089ef3794141768b4a4d262c32036c4c62c2f7df7c1849196c696aa18e3b216  Maui-v1.0-release.apk
+e43da3ef1b9073ed2e40a5f03171553a6efb2146d62d57c9915f3b6853fa74e4  Maui-v1.0-release.apk
 ```
