@@ -3,6 +3,7 @@ package com.maui.system.ui
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.maui.system.R
@@ -178,6 +179,12 @@ class AppAdapter(
 class GameAdapter(
     private val onPlay: (GameEntry) -> Unit,
     private val onProfile: (GameEntry) -> Unit,
+    /** Tapping the star marks the game as a favourite. */
+    private val onFavourite: (GameEntry) -> Unit = {},
+    /** Whether the game is a favourite right now. */
+    private val favouriteProvider: (GameEntry) -> Boolean = { false },
+    /** The play time of this game, from the session history. */
+    private val playtimeProvider: (GameEntry) -> String = { "" },
     /** Icon source; the launcher uses the real package icon. */
     private val iconProvider: (GameEntry, Context) -> Drawable? = { entry, ctx ->
         AppHelper.iconOf(ctx, entry.packageName)
@@ -210,6 +217,15 @@ class GameAdapter(
             g.packageName
         }
         holder.binding.icon.setImageDrawable(iconProvider(g, ctx))
+        val favourite = favouriteProvider(g)
+        holder.binding.fav.text = if (favourite) "★" else "☆"
+        holder.binding.fav.setTextColor(
+            if (favourite) 0xFFF59E0B.toInt() else 0x66FFFFFF
+        )
+        holder.binding.fav.setOnClickListener { onFavourite(g) }
+        holder.binding.playtime.text = playtimeProvider(g)
+        holder.binding.playtime.visibility =
+            if (holder.binding.playtime.text.isNullOrEmpty()) View.GONE else View.VISIBLE
         holder.binding.play.text = ctx.getString(R.string.games_play)
         holder.binding.play.setOnClickListener { onPlay(g) }
         holder.binding.root.setOnClickListener { onPlay(g) }
