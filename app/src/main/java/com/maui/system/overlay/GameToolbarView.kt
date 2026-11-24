@@ -22,6 +22,8 @@ class GameToolbarView(
         fun onBoost()
         fun onClean()
         fun onToggleHud()
+        /** Opens the in-game tool grid. */
+        fun onTools()
         fun onExitGame()
     }
 
@@ -63,6 +65,7 @@ class GameToolbarView(
         })
 
         addView(button(context, "⚡", OverlayTheme.MAUI_AMBER) { actions.onBoost() })
+        addView(button(context, "🧰", OverlayTheme.MAUI_CYAN) { actions.onTools() })
         addView(button(context, "🧹", OverlayTheme.MAUI_CYAN) { actions.onClean() })
         addView(button(context, "📊", OverlayTheme.MAUI_BLUE) { actions.onToggleHud() })
         addView(button(context, "✕", OverlayTheme.MAUI_RED) { actions.onExitGame() })
@@ -86,9 +89,17 @@ class GameToolbarView(
      *   timeline. When it is not available we show the truth instead of a
      *   made-up number.
      */
-    fun update(s: PerfSnapshot, reading: com.maui.system.core.FpsReading? = null) {
+    fun update(
+        s: PerfSnapshot,
+        reading: com.maui.system.core.FpsReading? = null,
+        vfpsCeiling: Int = 0
+    ) {
         val real = reading?.takeIf { it.ok }?.fps ?: 0
-        fpsLabel.text = if (real > 0) "$real FPS" else "FPS --"
+        fpsLabel.text = when {
+            real > 0 && vfpsCeiling > 0 -> "$real FPS / $vfpsCeiling"
+            real > 0 -> "$real FPS"
+            else -> "FPS --"
+        }
         fpsLabel.setTextColor(
             when {
                 real >= 50 -> OverlayTheme.MAUI_GREEN
