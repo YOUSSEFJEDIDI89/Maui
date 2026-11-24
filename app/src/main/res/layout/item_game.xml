@@ -14,12 +14,29 @@
         android:orientation="vertical"
         android:padding="14dp">
 
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_gravity="center_horizontal"
-            android:contentDescription="@null" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/fav"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="end|top"
+                android:gravity="center"
+                android:text="☆"
+                android:textSize="18sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="@string/games_toggle_fav" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/title"
@@ -42,6 +59,17 @@
             android:alpha="0.6"
             android:maxLines="1"
             android:ellipsize="middle" />
+
+        <TextView
+            android:id="@+id/playtime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:textSize="10sp"
+            android:alpha="0.55"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/profile"
