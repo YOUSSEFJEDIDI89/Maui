@@ -122,6 +122,19 @@ object SurfaceFlingerProbe {
         return out
     }
 
+    /**
+     * The raw present timestamps of a layer, in nanoseconds.
+     *
+     * The VFPS engine needs the individual frame times — not only the average
+     * — to work out the 1% low, the jank share and the frame pacing.
+     */
+    fun timestampsFor(layer: String): List<Long> {
+        if (!RootShell.isRooted) return emptyList()
+        val res = RootShell.runRoot("dumpsys SurfaceFlinger --latency '$layer'", 12_000)
+        if (res.first != 0) return emptyList()
+        return parseTimestamps(res.second)
+    }
+
     /** Convenience: find the game's layer and measure it. */
     fun fpsForPackage(packageName: String): FpsReading {
         val layer = layerFor(packageName)

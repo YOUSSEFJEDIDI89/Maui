@@ -98,6 +98,36 @@ class Prefs private constructor(private val sp: SharedPreferences) {
         get() = sp.getBoolean("show_game_hud", true)
         set(v) = sp.edit().putBoolean("show_game_hud", v).apply()
 
+    /** Packages the user marked as favourites in the launcher. */
+    var favouriteGames: Set<String>
+        get() = sp.getStringSet("favourite_games", emptySet()) ?: emptySet()
+        set(v) = sp.edit().putStringSet("favourite_games", v).apply()
+
+    /** Track the play time and the frame rate of every session. */
+    var trackSessions: Boolean
+        get() = sp.getBoolean("track_sessions", true)
+        set(v) = sp.edit().putBoolean("track_sessions", v).apply()
+
+    /** Open the in-game tool panel automatically with the game toolbar. */
+    var showToolsPanel: Boolean
+        get() = sp.getBoolean("show_tools_panel", true)
+        set(v) = sp.edit().putBoolean("show_tools_panel", v).apply()
+
+    /** The crosshair overlay while gaming. */
+    var crosshairOn: Boolean
+        get() = sp.getBoolean("crosshair_on", false)
+        set(v) = sp.edit().putBoolean("crosshair_on", v).apply()
+
+    /** Lock the brightness while gaming. */
+    var brightnessLock: Boolean
+        get() = sp.getBoolean("brightness_lock", false)
+        set(v) = sp.edit().putBoolean("brightness_lock", v).apply()
+
+    /** Freeze the rotation while gaming. */
+    var rotationLocked: Boolean
+        get() = sp.getBoolean("rotation_lock", false)
+        set(v) = sp.edit().putBoolean("rotation_lock", v).apply()
+
     // ---- Cleaner ---------------------------------------------------------
     var autoClean: Boolean
         get() = sp.getBoolean("auto_clean", false)
