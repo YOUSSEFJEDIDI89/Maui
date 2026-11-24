@@ -99,6 +99,8 @@ class ScreenshotGenerator {
 
         renderOverlayPanel()
         renderOverlayHud()
+        renderToolsPanel()
+        renderVfpsScreen()
         renderLauncherIcon()
     }
 
@@ -123,6 +125,15 @@ class ScreenshotGenerator {
         File(ctx.cacheDir, "temp-upload.tmp").writeText("y".repeat(12_000))
         File(ctx.cacheDir, "thumb-cache.bin").writeBytes(ByteArray(96_000))
         File(ctx.cacheDir, "empty-folder").mkdirs()
+
+        // A 120 Hz panel, so the frame provider screen shows a real ceiling.
+        try {
+            val wm = ctx.getSystemService(android.content.Context.WINDOW_SERVICE) as android.view.WindowManager
+            @Suppress("DEPRECATION")
+            val display = wm.defaultDisplay
+            org.robolectric.Shadows.shadowOf(display).setRefreshRate(120f)
+        } catch (t: Throwable) {
+        }
 
         val battery = ctx.getSystemService(android.content.Context.BATTERY_SERVICE) as android.os.BatteryManager
         shadowOf(battery).setIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY, 78)
@@ -288,6 +299,7 @@ class ScreenshotGenerator {
             override fun onBoost() {}
             override fun onClean() {}
             override fun onToggleHud() {}
+            override fun onTools() {}
             override fun onExitGame() {}
         })
         toolbar.setGameName("PUBG MOBILE")
@@ -323,6 +335,75 @@ class ScreenshotGenerator {
         frame.layout(0, 0, w, h)
         frame.draw(canvas)
         write(bmp, "hud-game.png")
+    }
+
+    /** The in-game tool grid, drawn over a game-like background. */
+    private fun renderToolsPanel() {
+        val ctx = ApplicationProvider.getApplicationContext<android.content.Context>()
+        val w = 1080
+        val h = 2220
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bmp)
+        val bg = android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TL_BR,
+            intArrayOf(Color.parseColor("#123A2E"), Color.parseColor("#0C1A24"))
+        )
+        bg.setBounds(0, 0, w, h)
+        bg.draw(canvas)
+
+        val panel = com.maui.system.overlay.GameToolsPanelView(ctx, object : com.maui.system.overlay.GameToolsPanelView.Actions {
+            override fun onTool(id: String) {}
+            override fun onClose() {}
+            override fun onStatus(text: String) {}
+        })
+        panel.report("boost: 6 steps applied, 1 skipped • ceiling 120 Hz")
+
+        val frame = FrameLayout(ctx)
+        frame.addView(panel, FrameLayout.LayoutParams(920, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
+            gravity = android.view.Gravity.TOP or android.view.Gravity.END
+            leftMargin = 140
+            topMargin = 200
+        })
+        frame.measure(
+            View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY)
+        )
+        frame.layout(0, 0, w, h)
+        frame.draw(canvas)
+        write(bmp, "tools.png")
+    }
+
+    /** The VFPS screen with a real measurement on it. */
+    private fun renderVfpsScreen() {
+        val controller = Robolectric.buildActivity(com.maui.system.ui.VfpsActivity::class.java).create().start().resume()
+        val activity = controller.get()
+        val decor = activity.window.decorView
+        val fragment = activity.supportFragmentManager.fragments.firstOrNull() as? com.maui.system.ui.VfpsFragment
+        // The frame probe posts callbacks forever, which would keep the
+        // looper busy for the rest of the run.
+        fragment?.stopSelfProbe()
+        repeat(3) {
+            shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(150))
+            Thread.sleep(100)
+        }
+        // A realistic 120 Hz panel with a couple of dropped frames.
+        val frames = MutableList(180) { 8.33 + (Math.random() - 0.5) * 0.6 }
+        frames[60] = 26.4
+        frames[121] = 31.8
+        fragment?.applyMeasurement(
+            rfps = 116,
+            source = "SurfaceFlinger",
+            ceiling = 120,
+            frames = frames,
+            measured = true,
+            note = ""
+        )
+        repeat(2) {
+            shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(150))
+            Thread.sleep(100)
+        }
+        render(decor, "vfps.png")
+        controller.pause().stop().destroy()
     }
 
     private fun renderLauncherIcon() {

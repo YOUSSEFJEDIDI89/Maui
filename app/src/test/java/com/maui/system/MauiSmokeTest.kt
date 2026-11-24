@@ -96,6 +96,7 @@ class MauiSmokeTest {
             override fun onBoost() {}
             override fun onClean() {}
             override fun onToggleHud() {}
+            override fun onTools() {}
             override fun onExitGame() {}
         })
         toolbar.measure(0, 0)
